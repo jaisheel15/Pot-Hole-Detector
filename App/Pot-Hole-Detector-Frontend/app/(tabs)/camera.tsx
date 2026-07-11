@@ -23,6 +23,7 @@ import LottieView from 'lottie-react-native';
 import processingAnimation from '../../assets/animations/imageDetect.json';
 import camLoaderAnimation from '../../assets/animations/cameraLoader.json';
 import * as Location from 'expo-location';
+import * as Haptics from 'expo-haptics';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNav from "../components/BottomNav";
 
@@ -105,9 +106,11 @@ export default function Camera() {
       });
 
       if (!result.canceled && result.assets?.length > 0) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setImage(result.assets[0].uri);
       }
     } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'An error occurred while taking the photo.');
     }
   };
@@ -125,9 +128,11 @@ export default function Camera() {
       });
 
       if (!result.canceled && result.assets?.length > 0) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setImage(result.assets[0].uri);
       }
     } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert('Error', 'An error occurred while selecting the image.', [{ text: 'OK' }]);
     }
   };
@@ -195,6 +200,7 @@ export default function Camera() {
       const confidencePercentage = highestConfidence * 100;
 
       if (confidencePercentage <= 50) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
         Alert.alert("No Potholes Detected", "Detection confidence is below 50%.", [{ text: "OK" }]);
         return;
       }
@@ -246,6 +252,7 @@ export default function Camera() {
       const result = await uploadResponse.json();
 
       if (result.success) {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         console.log('Upload Result:', result);
         router.push({
           pathname: "/maps",
@@ -265,6 +272,7 @@ export default function Camera() {
       }
 
     } catch (error: any) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       const errorMessage = error.message.includes('No potholes detected')
         ? 'No potholes were detected in the image. Please try with a different image.'
         : `Error: ${error.message}`;
